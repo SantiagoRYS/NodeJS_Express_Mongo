@@ -1,0 +1,35 @@
+{
+  "name": "node-js_express_mongo",
+  "version": "1.0.0",
+  "description": "Laboratorio API REST con MongoDB",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SantiagoRYS/SantiagoRYS-NodeJS_Express_Mongo.git"
+  },
+  "keywords": [
+    "NodeJS",
+    "Express",
+    "MongoDB",
+    "API",
+    "REST",
+    "Backend"
+  ],
+  "author": "Santiago Gonzalez Fontecha",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SoftwareFactoryCEET/NodeJS_Express_Mongo/issues"
+  },
+  "homepage": "https://github.com/SoftwareFactoryCEET/NodeJS_Express_Mongo#readme",
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
