@@ -1,70 +1,83 @@
-const Curso =  require('../models/curso_model');
-const Joi = require('@hapi/joi');
+const Curso = require('../models/curso_model');
 
-// Validaciones para el objeto curso
-const Schema = Joi.object({
-  titulo: Joi.string()
-    .min(3)
-    .max(100)
-    .required()
-    .pattern(/^[A-Za-záéíóúñÁÉÍÓÚÑ0-9 ]{3,100}$/),
-
-  descripcion: Joi.string()
-    .max(500)
-    .allow(''),
-
-  alumnos: Joi.number()
-    .integer()
-    .min(0) 
-    .default(0),
-
-  calificacion: Joi.number()
-    .min(1)
-    .max(10)
-    .default(0)
-});
-
-//Funcin asincrona para crear cursos
-async function crearCurso(body){
-    let curso = new Curso({
-        titulo  :body.titulo,
-        descripcion : body.descripcion,
-        alumnos     : body.alumnos,
-        calificacion : body.calificacion
-    })
-    return await curso.save();
-}
-
-//Funcion asincrona para actualizar cursos
-async function actualizarCurso(id, body){
-    let curso = await Curso.findByIdAndUpdate(id,{
-        $set:{
-            titulo: body.titulo,
-            descripcion: body.descripcion
+// Función asíncrona para crear un curso
+async function crearCurso(body) {
+    try {
+        // Verificar si el título ya existe
+        let cursoExistente = await Curso.findOne({ titulo: body.titulo });
+        if (cursoExistente) {
+            throw new Error('El título del curso ya está en uso.');
         }
-    },{new:true});
-return curso;
+
+        let curso = new Curso({
+            titulo: body.titulo,
+            descripcion: body.descripcion,
+            alumnos: body.alumnos,
+            calificacion: body.calificacion
+        });
+
+        return await curso.save();
+    } catch (error) {
+        throw new Error(`Error al crear el curso: ${error.message}`);
+    }
 }
+
+// Función asíncrona para actualizar un curso
+async function actualizarCurso(id, body) {
+    try {
+        // Verificar si el título ya está en uso por otro curso
+        let cursoExistente = await Curso.findOne({ titulo: body.titulo });
+        if (cursoExistente && cursoExistente._id.toString() !== id) {
+            throw new Error('El título del curso ya está en uso por otro curso.');
+        }
+
+        let curso = await Curso.findByIdAndUpdate(
+            id,
+            {
+                $set: {
+                    titulo: body.titulo,
+                    descripcion: body.descripcion,
+                    alumnos: body.alumnos,
+                    calificacion: body.calificacion
+                }
+            },
+            { new: true }
+        );
+
+        return curso;
+    } catch (error) {
+        throw new Error(`Error al actualizar el curso: ${error.message}`);
+    }
+}
+
 
 //Funcion asincrona para Desacticar cursos
 async function desactivarCurso(id){
-    let curso = await Curso.findByIdAndUpdate(id,{
+    try{
+        let curso = await Curso.findByIdAndUpdate(id,{
         $set:{
             estado:false
         }
-    },{new:true});
-return curso;
+        },{new:true});
+        return curso;
+    } catch (error) {
+        throw new Error(`Error al desactivar el curso: ${error.message}`);
+    }
+
 }
 
 //Funcion asincrona para listar los cursos activos
 async function listarCursosActivos() {
-    let cursos = await Curso.find({"estado": true});
-    return cursos;
+    try{
+        let cursos = await Curso.find({"estado": true});
+        return cursos;
+    } catch (error) {
+        throw new Error(`Error al listar el curso: ${error.message}`);
+    }
     
 }
 
 module.exports={
-    Schema,
     crearCurso,
     actualizarCurso,
     desactivarCurso,

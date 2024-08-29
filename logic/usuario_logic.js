@@ -1,70 +1,81 @@
 const Usuario = require('../models/usuario_model');
-const Joi = require ('@hapi/joi');
 
-//Validaciones para el objeto usuario
-const schema = Joi.object({
-    nombre: Joi.string()
-    .min(3)
-    .max(30)
-    .required()
-    .pattern(/^[A-Za-záéíóú ]{3,30}$/),
-
-    password: Joi.string()
-    .pattern(/^[A-Za-záéíóú ]{3,30}$/),
-
-    email: Joi.string()
-    .email({ 
-        minDomainSegments: 2,
-        tlds:{allow:['com', 'net', 'edu', 'co']}})
-    });
-
-    //Funcion asincrona para crear un objeto de tipo usuario
+// Función asíncrona para crear un objeto de tipo usuario
 async function crearUsuario(body) {
-    let usuario = new Usuario({
-        email      : body.email,
-        nombre     : body.nombre,
-        password   : body.password
+    try {
+        // Verificar si el correo ya existe
+        let usuarioExistente = await Usuario.findOne({ email: body.email });
+        if (usuarioExistente) {
+            throw new Error('El correo electrónico ya está en uso.');
+        }
 
-    });
-    return await usuario.save()
+        let usuario = new Usuario({
+            email: body.email,
+            nombre: body.nombre,
+            password: body.password
+        });
+
+        return await usuario.save();
+    } catch (error) {
+        throw new Error(`Error al crear el usuario: ${error.message}`);
+    }
 }
 
-
-//Funcion para actuarlizar al usuario
+// Función para actualizar el usuario
 async function actualizarUsuario(email, body) {
-    let usuario = await Usuario.findOneAndUpdate
-    (
-        {"email":email},{
-            $set:{
-                nombre:body.nombre,
-                password: body.password
-            }
-        
-        }, {new: true}
-    );
-    return usuario;
+    try {
+        // Verificar si el correo ya está en uso por otro usuario
+        let usuarioExistente = await Usuario.findOne({ email: body.email });
+        if (usuarioExistente && usuarioExistente.email !== email) {
+            throw new Error('El correo electrónico ya está en uso por otro usuario.');
+        }
+
+        let usuario = await Usuario.findOneAndUpdate(
+            { "email": email },
+            {
+                $set: {
+                    nombre: body.nombre,
+                    password: body.password
+                }
+            },
+            { new: true }
+        );
+
+        return usuario;
+    } catch (error) {
+        throw new Error(`Error al actualizar el usuario: ${error.message}`);
+    }
 }
+
 
 
 async function desactivarUsuario(email) {
-    let usuario = await Usuario.findOneAndUpdate({"email":email},{
-        $set:{
-            estado: false
-        }
-    },
-    {new:true}
-);
-return usuario;    
+    try{
+        let usuario = await Usuario.findOneAndUpdate({"email":email},{
+            $set:{
+                estado: false
+            }
+        },
+        {new:true}
+        );
+        return usuario;    
+    } catch (error) {
+        throw new Error(`Error al desactivar el usuario: ${error.message}`);
+    }
 }
 
 //Funcion asincrona para listar todos los usuarios activos
 async function listarUsuariosActivos() {
-    let usuarios = await Usuario.find({"estado": true});
+    try{
+        let usuarios = await Usuario.find({"estado": true});
     return usuarios;
+    } catch (error) {
+        throw new Error(`Error al listar el usuario: ${error.message}`);
+    }
+
 }
 
 module.exports ={
-    schema,
     crearUsuario,
     actualizarUsuario,
     desactivarUsuario,

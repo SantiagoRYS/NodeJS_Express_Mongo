@@ -2,88 +2,87 @@ const express = require('express');
 
 const ruta = express.Router();
 
-const logic = require('../logic/usuario_logic')
+const logic = require('../logic/usuario_logic');
 
+const schema = require('../validations/usuario_validation');
 
 /*
 ruta.get('/', (req,res)=>{
     res.json('Respuesta a peticion GET se USUARIOS funcionando correctamente...')
 })*/
 
-
 //Endpoint de tipo post para el recurso USUARIOS
-ruta.post('/', (req, res) => {
+ruta.post('/', async (req, res) => {
     let body = req.body;
-    const {error, value} = logic.schema.validate({nombre: body.nombre, email: body.email});
+    const {error, value} = schema.validate({nombre: body.nombre, email: body.email, password: body.password});
     if (!error){
-        let resultado = logic.crearUsuario(body);
-
-        resultado .then(user =>{
+        try{
+            let resultado = await logic.crearUsuario(body);
             res.json({
-                valor: user
+                valor: resultado
             })
-        }).catch(err =>{
+        }catch(err) {
             res.status(400).json({
-                err
-            })
-        });
+                error: err.message
+            });
+        }
     }else{
         res.status(400).json({
-            error
+            error: error.details[0].message
         })
     }
 });
 
 //Endpoint de tipo put para actualizar los datos del usuario
-ruta.put('/:email', (req, res) =>{
-    const {error, value} =logic.schema.validate({nombre: req.body.nombre})
+ruta.put('/:email', async (req, res) =>{
+    const {error, value} =schema.validate({nombre: req.body.nombre})
     if(!error){
-        let resultado = logic.actualizarUsuario(req.params.email, req.body);
-        resultado.then(valor =>{
+        try{
+            let resultado = await logic.actualizarUsuario(req.params.email, req.body);
             res.json({
                 message:'Usuario actualizado exitosamente',
-                data:valor
+                data: resultado
             });
-        }).catch(err =>{
+        }catch (err) {
             res.status(400).json({
-                message:'Error al actualizar el usuario',
-                error:err.message
+                message: 'Error al actualizar el usuario',
+                error: err.message
             });
-        });
-    }else{
+        }
+    } else {
         res.status(400).json({
-            error
-        })
+            error: error.details[0].message
+        });
     }
 });
 
 //Endpoint de tipo DELETE para el recurso USUARIOS
-ruta.delete('/:email', (req, res)=>{
-    let resultado = logic.desactivarUsuario(req.params.email);
-    resultado.then(valor =>{
+ruta.delete('/:email', async (req, res)=>{
+    try {
+        let resultado = await logic.desactivarUsuario(req.params.email);
         res.json({
-            message:'Exito al desactivar al usuario',
-            usuario: valor
-        })
-    }).catch(err =>{
+            message: 'Éxito al desactivar al usuario',
+            usuario: resultado
+        });
+    } catch (err) {
         res.status(400).json({
-            message:'Error al desactivar al usuario',
-            error:err.message
-        })
-    });
+            message: 'Error al desactivar al usuario',
+            error: err.message
+        });
+    }
 });
 
 //Endpoint de tipo GET para el recurso usuarios. Lista todos los usuarios
-ruta.get('/', (req, res)=>{
-    let resultado = logic.listarUsuariosActivos();
-    resultado.then(usuarios =>{
-        res.json(usuarios)
-    }).catch(err=>{
+ruta.get('/', async (req, res)=>{
+    try {
+        let usuarios = await logic.listarUsuariosActivos();
+        res.json(usuarios);
+    } catch (err) {
         res.status(400).json({
-            message:'Error al listar los usuarios activos',
-            error:err.message
-        })
-    })
-})
+            message: 'Error al listar los usuarios activos',
+            error: err.message
+        });
+    }
+});
 
 module.exports = ruta;
