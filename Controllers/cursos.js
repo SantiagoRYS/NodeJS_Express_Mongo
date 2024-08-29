@@ -7,7 +7,7 @@ ruta.get('/', (req, res) => {
     res.json('Respuesta a peticion GET de CURSOS funcionando correctamente...');
 });
 
-
+module.exports = ruta;
 
 
 // Función asíncrona para crear cursos
@@ -37,4 +37,23 @@ ruta.post('/', (req, res) => {
   });
 
 
-  module.exports = ruta;
+//Funcion asincrona para actualizar cursos
+async function actualizarCurso(id, body) {
+    let curso = await Curso.findByIdAndUpdate(id, {
+        $set: {
+            titulo: body.titulo,
+            descripcion: body.descripcion
+        }
+    }, { new: true });
+    return curso;
+}
+
+//Endpoint de tipos PUT para actualizar los cursos
+ruta.put('/:id', (req, res)=>{
+    let resultado = logic.actualizarCurso(req.params.id, req.body);
+    resultado.then(curso =>{
+        res.json(curso)
+    }).catch(err=>{
+        res.status(400).json(err)
+    })
+});
