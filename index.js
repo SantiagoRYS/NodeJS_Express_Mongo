@@ -3,24 +3,30 @@ const cursos = require('./controllers/cursos');
 
 
 
-const express = require("express");
-const mongoose = require("mongoose");
 
-// Conexión a la base de datos mongodb
-mongoose.connect("mongodb://localhost:27017/userscoursesdb")
-  .then(() => console.log("Conectado a MongoDB..."))
-  .catch(err => console.log("No se pudo conectar con MongoDB...", err));
 
-// Middleware
+
+const express = require('express');
+const mongoose = require('mongoose');
+
+//Conexion a la DB mongodb
+mongoose.connect('mongodb://localhost:27017/usercoursesdb')
+.then(() => console.log('Conectando a MongoDB...'))
+.catch(err => console.log('No se pudo conectar con MongoDB...', err));
+
+
+//Middleware
 const app = express();
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({extended:true}));
 
-//end points (recursos)
 app.use('/api/usuarios', usuarios);
 app.use('/api/cursos', cursos);
 
+
+
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log("API REST Ok, y ejecutándose...");
-})
+  console.log(`Servidor ejecutando http://localhost:${port}`);
+});
