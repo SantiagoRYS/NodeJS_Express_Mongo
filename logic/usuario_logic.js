@@ -1,9 +1,6 @@
 const Usuario = require('../models/usuario_model');
 const Joi = require ('@hapi/joi');
 
-
-
-
 //Validaciones para el objeto usuario
 const schema = Joi.object({
     nombre: Joi.string()
@@ -12,10 +9,8 @@ const schema = Joi.object({
     .required()
     .pattern(/^[A-Za-záéíóú ]{3,30}$/),
 
-
     password: Joi.string()
     .pattern(/^[A-Za-záéíóú ]{3,30}$/),
-
 
     email: Joi.string()
     .email({ 
