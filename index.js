@@ -1,13 +1,17 @@
+require('dotenv').config();
+
 const usuarios = require('./controllers/usuarios');
 const cursos = require('./controllers/cursos');
 
 const express = require('express');
 const mongoose = require('mongoose');
 
+const connection = process.env.conexion;
+
 //Conexion a la DB mongodb
-mongoose.connect('mongodb://localhost:27017/usercoursesdb')
-.then(() => console.log('Conectando a MongoDB...'))
-.catch(err => console.log('No se pudo conectar con MongoDB...', err));
+mongoose.connect(connection)
+  .then(() => console.log('Conectando a MongoDB...'))
+  .catch(err => console.log('No se pudo conectar con MongoDB...', err));
 
 //Middleware
 const app = express();
