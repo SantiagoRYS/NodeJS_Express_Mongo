@@ -1,9 +1,6 @@
 const express = require('express');
-
 const ruta = express.Router();
-
 const logic = require('../logic/usuario_logic');
-
 const schema = require('../validations/usuario_validation');
 
 /*
