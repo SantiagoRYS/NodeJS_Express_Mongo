@@ -1,7 +1,7 @@
 require('dotenv').config();
 
-const usuarios = require('./controllers/usuarios');
-const cursos = require('./controllers/cursos');
+const usuarios = require('../controllers/usuarios');
+const cursos = require('../controllers/cursos');
 
 const express = require('express');
 const mongoose = require('mongoose');
