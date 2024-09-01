@@ -1,4 +1,4 @@
-const Curso = require('../models/curso_model');
+const Curso = require('../Models/curso_model');
 
 // Función asíncrona para crear un curso
 async function crearCurso(body) {

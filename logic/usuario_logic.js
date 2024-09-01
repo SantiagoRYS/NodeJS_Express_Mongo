@@ -1,4 +1,4 @@
-const Usuario = require('../models/usuario_model');
+const Usuario = require('../Models/usuario_model');
 
 // Función asíncrona para crear un objeto de tipo usuario
 async function crearUsuario(body) {
