@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const cursoSchema = new mongoose.Schema({
   titulo: {
     type: String,
@@ -17,12 +18,13 @@ const cursoSchema = new mongoose.Schema({
     required: false
   },
   alumnos: {
-    type: Number,
-    default: 0
+    type: [String],
+    required: false
   },
   calificacion: {
     type: Number,
     default: 0
   }
 });
+
 module.exports = mongoose.model('Curso', cursoSchema);
