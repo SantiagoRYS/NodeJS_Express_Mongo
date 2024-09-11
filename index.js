@@ -8,6 +8,9 @@ const mongoose = require('mongoose');
 const cors = require ('cors'); //importa el middleware de CORS
 const { swaggerUi, swaggerSpec } = require('./swagger/swagger'); // Importa Swagger
 
+// Importamos la semilla
+const seedDatabase = require('./seed/seeds')
+
 // Importa las rutas
 const usuarios = require('./routes/usuario_route');
 const cursos = require('./routes/curso_route');
@@ -15,8 +18,12 @@ const cursos = require('./routes/curso_route');
 const connection = process.env.conexion;
 
 mongoose.connect(connection)
-  .then(() => console.log('Conectando a MongoDB...'))
-  .catch(err => console.log('No se pudo conectar con MongoDB...', err));
+    .then(() => {
+        console.log('Conectado a MongoDB...');
+        // Llamamos a la función para sembrar la base de datos aquí
+        seedDatabase(); 
+    })
+    .catch(err => console.log('No se pudo conectar con MongoDB...', err));
 
 //middle
 const app = express();
@@ -55,4 +62,3 @@ https.createServer(options, app).listen(port, () => {
   console.log('Servidor HTTPS corriendo en https://localhost:3000');
   console.log('Api REST Ok, y ejecutándose...');
 });
-
